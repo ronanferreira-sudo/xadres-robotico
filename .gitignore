@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+env/
+*.spec
+
+# Dobot / logs
+DobotRPC_*.log
+logs/
+*.log
+
+# Calibracao e configuracoes locais (nao versionar)
+config/calibration.local.yaml
+*.local.yaml
+
+# Dados de visao / imagens capturadas
+captures/
+*.png
+*.jpg
+*.jpeg
+
+# Ambiente
+.env
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+.kilo/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/

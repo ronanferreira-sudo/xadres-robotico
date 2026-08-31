@@ -1,0 +1,22 @@
+PTP_JUMP = 0
+PTP_MOVJ = 1
+PTP_MOVL = 2
+PTP_JUMP_XYZ = 3
+
+HOME_X = 227.53
+HOME_Y = 0.0
+HOME_Z = 140.83
+HOME_R = 0.0
+
+PTP_MODES = {
+    "JUMP_XYZ": 0,
+    "MOVJ_XYZ": 1,
+    "MOVL_XYZ": 2,
+    "JUMP_ANGLE": 3,
+    "MOVJ_ANGLE": 4,
+    "MOVL_ANGLE": 5,
+    "MOVJ_INC": 6,
+    "MOVL_INC": 7,
+    "MOVJ_XYZ_INC": 8,
+    "JUMP_MOVL_XYZ": 9,
+}

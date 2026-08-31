@@ -1,0 +1,30 @@
+# Arquivo de calibracao do tabuleiro e das cameras.
+# Gerado pela ferramenta `xadrez calibrate`. NAO edite manualmente a menos
+# que saiba o que esta fazendo.
+#
+# Estrutura esperada (exemplo):
+#
+# camera:
+#   # Transformada do tabuleiro (quadrado a1..h8) para pixels da imagem.
+#   # Centro de cada quadrado em pixels [u, v].
+#   square_centers:
+#     a1: [123.4, 650.2]
+#     b1: [190.1, 648.9]
+#     ...
+#   # Imagem de referencia (tabuleiro vazio) usada para subtracao de fundo.
+#   empty_reference: captures/board_empty.png
+#   # Tamanho do ROI (px) de cada quadrado para recorte.
+#   roi_size: 48
+#
+# arms:
+#   white:
+#     # Origem e parametros ja ajustados pelo processo de calibracao fisica.
+#     origin_x: 120.0
+#     origin_y: -120.0
+#     rotation_deg: 0.0
+#     spacing: 45.0
+#   black:
+#     origin_x: 120.0
+#     origin_y: 120.0
+#     rotation_deg: 0.0
+#     spacing: 45.0
