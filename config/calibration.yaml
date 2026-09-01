@@ -1,30 +1,196 @@
-# Arquivo de calibracao do tabuleiro e das cameras.
-# Gerado pela ferramenta `xadrez calibrate`. NAO edite manualmente a menos
-# que saiba o que esta fazendo.
-#
-# Estrutura esperada (exemplo):
-#
-# camera:
-#   # Transformada do tabuleiro (quadrado a1..h8) para pixels da imagem.
-#   # Centro de cada quadrado em pixels [u, v].
-#   square_centers:
-#     a1: [123.4, 650.2]
-#     b1: [190.1, 648.9]
-#     ...
-#   # Imagem de referencia (tabuleiro vazio) usada para subtracao de fundo.
-#   empty_reference: captures/board_empty.png
-#   # Tamanho do ROI (px) de cada quadrado para recorte.
-#   roi_size: 48
-#
-# arms:
-#   white:
-#     # Origem e parametros ja ajustados pelo processo de calibracao fisica.
-#     origin_x: 120.0
-#     origin_y: -120.0
-#     rotation_deg: 0.0
-#     spacing: 45.0
-#   black:
-#     origin_x: 120.0
-#     origin_y: 120.0
-#     rotation_deg: 0.0
-#     spacing: 45.0
+camera:
+  square_centers:
+    a1:
+    - 49.0
+    - 3.0
+    b1:
+    - 105.3
+    - 57.4
+    c1:
+    - 161.6
+    - 111.9
+    d1:
+    - 217.9
+    - 166.3
+    e1:
+    - 274.1
+    - 220.7
+    f1:
+    - 330.4
+    - 275.1
+    g1:
+    - 386.7
+    - 329.6
+    h1:
+    - 443.0
+    - 384.0
+    a2:
+    - 49.3
+    - 59.1
+    b2:
+    - 105.5
+    - 97.8
+    c2:
+    - 161.7
+    - 136.5
+    d2:
+    - 218.0
+    - 175.2
+    e2:
+    - 274.2
+    - 213.9
+    f2:
+    - 330.4
+    - 252.6
+    g2:
+    - 386.6
+    - 291.3
+    h2:
+    - 442.9
+    - 330.0
+    a3:
+    - 49.6
+    - 115.3
+    b3:
+    - 105.7
+    - 138.2
+    c3:
+    - 161.9
+    - 161.2
+    d3:
+    - 218.1
+    - 184.2
+    e3:
+    - 274.2
+    - 207.1
+    f3:
+    - 330.4
+    - 230.1
+    g3:
+    - 386.6
+    - 253.0
+    h3:
+    - 442.7
+    - 276.0
+    a4:
+    - 49.9
+    - 171.4
+    b4:
+    - 106.0
+    - 178.7
+    c4:
+    - 162.1
+    - 185.9
+    d4:
+    - 218.2
+    - 193.1
+    e4:
+    - 274.3
+    - 200.3
+    f4:
+    - 330.4
+    - 207.6
+    g4:
+    - 386.5
+    - 214.8
+    h4:
+    - 442.6
+    - 222.0
+    a5:
+    - 50.1
+    - 227.6
+    b5:
+    - 106.2
+    - 219.1
+    c5:
+    - 162.2
+    - 210.6
+    d5:
+    - 218.3
+    - 202.0
+    e5:
+    - 274.3
+    - 193.5
+    f5:
+    - 330.3
+    - 185.0
+    g5:
+    - 386.4
+    - 176.5
+    h5:
+    - 442.4
+    - 168.0
+    a6:
+    - 50.4
+    - 283.7
+    b6:
+    - 106.4
+    - 259.5
+    c6:
+    - 162.4
+    - 235.2
+    d6:
+    - 218.4
+    - 211.0
+    e6:
+    - 274.3
+    - 186.7
+    f6:
+    - 330.3
+    - 162.5
+    g6:
+    - 386.3
+    - 138.2
+    h6:
+    - 442.3
+    - 114.0
+    a7:
+    - 50.7
+    - 339.9
+    b7:
+    - 106.6
+    - 299.9
+    c7:
+    - 162.6
+    - 259.9
+    d7:
+    - 218.5
+    - 219.9
+    e7:
+    - 274.4
+    - 179.9
+    f7:
+    - 330.3
+    - 140.0
+    g7:
+    - 386.2
+    - 100.0
+    h7:
+    - 442.1
+    - 60.0
+    a8:
+    - 51.0
+    - 396.0
+    b8:
+    - 106.9
+    - 340.3
+    c8:
+    - 162.7
+    - 284.6
+    d8:
+    - 218.6
+    - 228.9
+    e8:
+    - 274.4
+    - 173.1
+    f8:
+    - 330.3
+    - 117.4
+    g8:
+    - 386.1
+    - 61.7
+    h8:
+    - 442.0
+    - 6.0
+  roi_size: 48
+  empty_reference: config/board_empty.png
