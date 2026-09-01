@@ -57,13 +57,10 @@ arms:
 # ---------- Cameras / Visao computacional ----------
 vision:
   enabled: true
-  # Indice da camera (0, 1, ...). Em simulation usa fonte sintetica.
-  camera_index: 0
-  width: 1280
-  height: 720
-  # Tolerancia (0-1) para considerar diferenca de ocupacao em relacao ao fundo.
+  camera_index: 1
+  width: 640
+  height: 480
   occupancy_threshold: 0.18
-  # Metodo de deteccao: "template" (diff com fundo/referencia) ou "ground_truth" (simulacao).
   method: template
 
 # ---------- Inteligencia / Motor de xadrez ----------
