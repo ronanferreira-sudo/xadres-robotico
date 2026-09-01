@@ -15,6 +15,7 @@ from __future__ import annotations
 import logging
 from typing import Callable, Mapping
 
+import cv2
 import numpy as np
 
 from .calibration import Calibration
@@ -59,8 +60,6 @@ class BoardDetector:
         if not path:
             return self._empty_cache
         try:
-            import cv2
-
             img = cv2.imread(path)
             if img is None:
                 return self._empty_cache
@@ -76,7 +75,6 @@ class BoardDetector:
             raise ValueError(f"Metodo de deteccao nao suportado: {self.method}")
         if frame is None:
             return {}
-        import cv2
 
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         empty = self._load_empty_reference()
