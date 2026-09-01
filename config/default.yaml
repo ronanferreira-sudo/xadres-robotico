@@ -60,7 +60,7 @@ vision:
   camera_index: 1
   width: 640
   height: 480
-  occupancy_threshold: 0.18
+  occupancy_threshold: 0.9
   method: template
 
 # ---------- Inteligencia / Motor de xadrez ----------
