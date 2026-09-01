@@ -42,7 +42,14 @@ class BoardDetector:
         half = size // 2
         u0, u1 = max(0, u - half), min(w, u + half)
         v0, v1 = max(0, v - half), min(h, v + half)
-        return frame[v0:v1, u0:u1]
+        roi = frame[v0:v1, u0:u1]
+        if roi.shape[0] != size or roi.shape[1] != size:
+            top = max(0, size//2 - v)
+            bottom = max(0, v + size//2 - h)
+            left = max(0, size//2 - u)
+            right = max(0, u + size//2 - w)
+            roi = cv2.copyMakeBorder(roi, top, bottom, left, right, cv2.BORDER_CONSTANT, value=0)
+        return roi
 
     def _load_empty_reference(self) -> dict[str, np.ndarray]:
         if self._empty_cache is not None:
