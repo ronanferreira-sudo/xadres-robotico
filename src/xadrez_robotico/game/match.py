@@ -106,14 +106,18 @@ class Match:
             await self._setup_simulation()
 
     async def _setup_hardware(self) -> None:
-        from ..robot.arm import Arm
+        from ..robot.arm import Arm, assign_auto_ports, find_all_dobot_ports
 
         arms_cfg = self.config.get("arms", {})
+        auto_ports = find_all_dobot_ports()
+        logger.info("Portas Dobot encontradas: %s", auto_ports)
+        assignments = assign_auto_ports(["white", "black"], auto_ports)
         for color in ("white", "black"):
             cfg = arms_cfg.get(color, {})
             if not cfg.get("enabled", False):
                 continue
-            arm = Arm(color, cfg)
+            arm = Arm(color, cfg, serial_port=assignments.get(color))
+            logger.info("[%s] porta=%s", color, arm.serial_port)
             await arm.connect()
             await arm.home()
             self.arms[color] = arm

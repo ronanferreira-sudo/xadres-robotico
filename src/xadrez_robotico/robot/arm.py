@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import serial.tools.list_ports
 from typing import Any, Mapping
 
 from ..dobot import Robot
@@ -16,8 +17,35 @@ from .kinematics import BoardToRobot
 logger = logging.getLogger(__name__)
 
 
+def find_all_dobot_ports() -> list[str]:
+    """Retorna todas as portas seriais candidatas a Dobot Magician Lite."""
+    ports = list(serial.tools.list_ports.comports())
+    detected: list[str] = []
+    for p in ports:
+        desc = (p.description or "").lower()
+        if any(token in desc for token in ("dobot", "usb serial", "ch340", "cp210")):
+            detected.append(p.device)
+        elif p.device.lower().startswith(("com", "/dev/ttyusb", "/dev/ttyacm")):
+            detected.append(p.device)
+    return detected
+
+
+def assign_auto_ports(colors: list[str], available: list[str]) -> dict[str, str]:
+    out: dict[str, str] = {}
+    for i, color in enumerate(colors):
+        out[color] = available[i % len(available)] if available else "auto"
+    return out
+
+
 class Arm:
-    def __init__(self, color: str, cfg: Mapping) -> None:
+    def __init__(
+        self,
+        color: str,
+        cfg: Mapping,
+        *,
+        auto_ports: list[str] | None = None,
+        serial_port: str | None = None,
+    ) -> None:
         self.color = color
         self.cfg = cfg
         self.kin = BoardToRobot.from_config(cfg)
@@ -32,7 +60,12 @@ class Arm:
             float(cfg.get("capture_z", self.grip_z)),
         )
         self.connection = str(cfg.get("connection", "usb"))
-        self.serial_port = cfg.get("serial_port", "auto")
+
+        if serial_port is not None:
+            self.serial_port = serial_port
+        else:
+            raw = cfg.get("serial_port", "auto")
+            self.serial_port = raw
         self._robot: Robot | None = None
         self._queue_started = False
 

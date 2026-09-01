@@ -3,6 +3,7 @@ import logging
 from concurrent.futures import ThreadPoolExecutor
 from typing import Any
 
+from .constants import HOME_X, HOME_Y, HOME_Z, HOME_R
 from .exceptions import ConnectionError, RPCError, TimeoutError
 
 logger = logging.getLogger(__name__)
@@ -107,7 +108,7 @@ class USBClient:
         robo = self._robo
 
         if method == "set_homecmd":
-            robo.go()
+            robo.move_to(x=HOME_X, y=HOME_Y, z=HOME_Z, r=HOME_R)
             return None
         elif method == "set_ptpcmd":
             robo.move_to(
