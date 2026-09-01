@@ -3,7 +3,7 @@ import logging
 from concurrent.futures import ThreadPoolExecutor
 from typing import Any
 
-from .constants import HOME_X, HOME_Y, HOME_Z, HOME_R
+from .constants import HOME_X, HOME_Y, HOME_Z, HOME_R, PTP_MOVJ, PTP_MOVL, PTP_MODES
 from .exceptions import ConnectionError, RPCError, TimeoutError
 
 logger = logging.getLogger(__name__)
@@ -108,14 +108,17 @@ class USBClient:
         robo = self._robo
 
         if method == "set_homecmd":
-            robo.move_to(x=HOME_X, y=HOME_Y, z=HOME_Z, r=HOME_R)
+            robo._set_ptp_cmd(HOME_X, HOME_Y, HOME_Z, HOME_R, mode=PTP_MODES["MOVJ_XYZ"], wait=False)
             return None
         elif method == "set_ptpcmd":
-            robo.move_to(
+            mode = int(params.get("ptp_mode", PTP_MOVJ))
+            robo._set_ptp_cmd(
                 x=params.get("x", 0),
                 y=params.get("y", 0),
                 z=params.get("z", 0),
                 r=params.get("r", 0),
+                mode=mode,
+                wait=False,
             )
             return None
         elif method == "SetQueuedCmdStartExec":

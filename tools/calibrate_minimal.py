@@ -106,12 +106,13 @@ def main() -> int:
 
 
 def enhance_frame(frame: np.ndarray) -> np.ndarray:
-    img = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    img = cv2.equalizeHist(img)
-    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
-    img = clahe.apply(img)
-    img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
-    img = cv2.convertScaleAbs(img, alpha=2.5, beta=80)
+    lab = cv2.cvtColor(frame, cv2.COLOR_BGR2LAB)
+    l, a, b = cv2.split(lab)
+    clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
+    l = clahe.apply(l)
+    lab = cv2.merge((l, a, b))
+    img = cv2.cvtColor(lab, cv2.COLOR_LAB2BGR)
+    img = cv2.convertScaleAbs(img, alpha=2.0, beta=40)
     return img
 
 
