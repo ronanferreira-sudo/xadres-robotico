@@ -1,0 +1,59 @@
+# Configuracao para TESTE com 1 unico braco Dobot Magician Lite e tabuleiro 4x4.
+#
+# Uso:
+#   xadrez play --config config/hardware-4x4.yaml --calibration config/calibration.yaml
+#
+# Como so existe um robo, ele movimenta as pecas das DUAS cores (o mesmo braco
+# faz o lance e recolhe as pecas capturadas para a bandeja).
+
+mode: hardware
+
+board:
+  squares: 4                # tabuleiro 4x4 de teste (depois troque para 8)
+
+# ---------- Um unico braco (faz as duas cores) ----------
+arms:
+  white:
+    enabled: true
+    color: white
+    connection: usb         # "usb" (pydobot) ou "websocket" (DobotLab/RPC)
+    serial_port: auto       # "auto" ou "COM3", "/dev/ttyUSB0", etc.
+    # Origem (coordenada do robo) do canto a1 do tabuleiro 4x4 (mm).
+    origin_x: 120.0
+    origin_y: -120.0
+    rotation_deg: 0.0
+    spacing: 45.0           # distancia entre centros dos quadrados (mm)
+    travel_z: 60.0          # altura segura de transporte
+    grip_z: 8.0             # altura de pegar/soltar
+    capture_x: 250.0        # bandeja de capturadas
+    capture_y: -150.0
+    capture_z: 8.0
+    velocity: 40            # velocidade reduzida para o primeiro teste
+    acceleration: 40
+    effector: suction       # "suction" (ventosa) ou "gripper" (garra)
+
+  black:
+    enabled: false          # <- sem segundo robo; o braco branco atende as duas cores
+
+# ---------- Visao ----------
+vision:
+  enabled: true
+  camera_index: 0
+  width: 1280
+  height: 720
+  occupancy_threshold: 0.18
+  method: template
+
+# ---------- I.A. ----------
+engine:
+  backend: auto             # 4x4 ignora stockfish e usa minimax
+  minimax_depth: 3
+  players:
+    white: ai
+    black: ai               # troque para "human" se quiser jogar contra o robo
+
+# ---------- Partida ----------
+match:
+  max_moves: 40             # limite de seguranca para o teste
+  move_delay: 2.0           # pausa entre lances (seguranca no hardware)
+  verify_with_vision: true
