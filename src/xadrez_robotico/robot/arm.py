@@ -101,6 +101,10 @@ class Arm:
         logger.info("[%s] Home.", self.color)
         await self.robot.motion.home()
 
+    async def approach(self, square: str) -> None:
+        """Vai para cima do quadrado (altura de transporte), sem pegar/soltar."""
+        await self._go_above(square)
+
     async def _go_above(self, square: str) -> None:
         x, y = self.kin.to_xy(square)
         await self.robot.motion.movl(x, y, self.travel_z, 0)

@@ -3,7 +3,7 @@ opencv-python>=4.7
 numpy>=1.24
 pyyaml>=6.0
 pydobot>=1.3.0
-pyserial>=3.5
+pyserial==3.4
 websockets>=11.0
 pillow>=9.0
 matplotlib>=3.5

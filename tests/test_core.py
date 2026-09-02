@@ -1,6 +1,6 @@
 from xadrez_robotico.chess import BoardState, choose_move
 from xadrez_robotico.game import plan_actions
-from xadrez_robotico.robot.kinematics import BoardToRobot
+from xadrez_robotico.robot.kinematics import BoardToRobot, grid_squares
 
 
 def test_choose_move_legal_from_start():
@@ -57,3 +57,26 @@ def test_kinematics_rotation():
     # file 'b' (dx=10) rotacionado 90graus vira (0,10)
     x, y = kin.to_xy("b1")
     assert abs(x) < 1e-6 and abs(y - 10.0) < 1e-6
+
+
+def test_grid_squares_4x4():
+    squares = grid_squares(4, 4)
+    assert len(squares) == 16
+    assert squares[0] == "a1"
+    assert squares[3] == "d1"
+    assert squares[-1] == "d4"
+    assert set(squares) == {f"{f}{r}" for f in "abcd" for r in "1234"}
+
+
+def test_grid_squares_8x8():
+    squares = grid_squares(8, 8)
+    assert len(squares) == 64
+    assert squares[0] == "a1"
+    assert squares[-1] == "h8"
+
+
+def test_kinematics_4x4():
+    kin = BoardToRobot(origin_x=0.0, origin_y=0.0, spacing=10.0, rotation_deg=0.0)
+    assert kin.to_xy("a1") == (0.0, 0.0)
+    x, y = kin.to_xy("d4")
+    assert abs(x - 30.0) < 1e-6 and abs(y - 30.0) < 1e-6

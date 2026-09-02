@@ -57,3 +57,16 @@ class BoardToRobot:
     def to_xyz(self, square: str, z: float) -> tuple[float, float, float]:
         x, y = self.to_xy(square)
         return x, y, z
+
+
+def grid_squares(files: int, ranks: int) -> list[str]:
+    """Gera os nomes dos quadrados de uma grade ``files`` x ``ranks``.
+
+    Exemplo: ``grid_squares(4, 4)`` retorna ``a1..d4`` (16 quadrados), em
+    ordem de rank (a1, b1, c1, d1, a2, ...).
+    """
+    out: list[str] = []
+    for rank in range(1, ranks + 1):
+        for file_idx in range(files):
+            out.append(f"{chr(ord('a') + file_idx)}{rank}")
+    return out
