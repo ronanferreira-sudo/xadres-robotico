@@ -1,0 +1,91 @@
+# Configuracao geral do sistema xadrez-robotico.
+# Todos os parametros podem ser sobrescritos por variaveis de ambiente ou CLI.
+
+mode: simulation            # "simulation" (sem hardware) ou "hardware" (bracos + cameras reais)
+
+board:
+  squares: 8                # dimensao do tabuleiro: 8 (padrao) ou 4 (teste)
+  # Altura da superficie do tabuleiro no espaco do robo (mm, eixo Z).
+  surface_z: 0.0
+  # Lado util do quadrado na visao (mm) - usado apenas para referencia/log.
+  square_size_mm: 45.0
+
+# ---------- Bracos roboticos (Dobot Magician Lite) ----------
+# Cada braco e responsavel por uma cor. Em hardware, informe a porta serial de cada um.
+arms:
+  white:
+    enabled: true
+    color: white
+    connection: usb         # "usb" (pydobot) ou "websocket" (DobotRPC/DobotLab)
+    serial_port: auto       # "auto" ou "COM3", "/dev/ttyUSB0", etc.
+    # Transformada rigida do quadrado do tabuleiro -> coordenada do robo (mm).
+    origin_x: 120.0         # posicao (robo) do canto a1
+    origin_y: -120.0
+    rotation_deg: 0.0       # rotacao do tabuleiro em relacao ao braco
+    spacing: 45.0           # distancia entre centros de quadrados (mm)
+    # Alturas (mm, Z positivo para cima)
+    travel_z: 60.0          # altura de transporte segura (acima do tabuleiro)
+    grip_z: 8.0             # altura para pegar/soltar a peca
+    # Bandeja de capturadas (onde soltar pecas tomadas), em coord robo.
+    capture_x: 250.0
+    capture_y: -150.0
+    capture_z: 8.0
+    # Velocidade/accel do braco (0-100)
+    velocity: 60
+    acceleration: 60
+    # End-effector usado para segurar a peca.
+    effector: suction       # "suction" (ventosa) ou "gripper" (garra)
+
+  black:
+    enabled: true
+    color: black
+    connection: usb
+    serial_port: auto
+    origin_x: 120.0
+    origin_y: 120.0
+    rotation_deg: 0.0
+    spacing: 45.0
+    travel_z: 60.0
+    grip_z: 8.0
+    capture_x: 250.0
+    capture_y: 150.0
+    capture_z: 8.0
+    velocity: 60
+    acceleration: 60
+    effector: suction
+
+# ---------- Cameras / Visao computacional ----------
+vision:
+  enabled: true
+  # Indice da camera (0, 1, ...). Em simulation usa fonte sintetica.
+  camera_index: 0
+  width: 1280
+  height: 720
+  # Tolerancia (0-1) para considerar diferenca de ocupacao em relacao ao fundo.
+  occupancy_threshold: 0.18
+  # Metodo de deteccao: "template" (diff com fundo/referencia) ou "ground_truth" (simulacao).
+  method: template
+
+# ---------- Inteligencia / Motor de xadrez ----------
+engine:
+  # "stockfish" usa o binario se encontrado; caso contrario cai para "minimax".
+  backend: auto             # "auto" | "stockfish" | "minimax"
+  # Caminho opcional para o binario do Stockfish (None = procura no PATH).
+  stockfish_path: null
+  # Tempo de pensamento (segundos) para stockfish.
+  think_time: 1.0
+  # Profundidade do minimax (usado se nao houver stockfish).
+  minimax_depth: 3
+  # Nivel dos jogadores: "white" e "black" podem ser "ai" ou "human".
+  players:
+    white: ai
+    black: ai
+
+# ---------- Partida ----------
+match:
+  # Quantos lances (meio-lances) no maximo antes de desistir (0 = sem limite).
+  max_moves: 0
+  # Pausa entre lances (segundos) - util em hardware para acompanhar.
+  move_delay: 0.0
+  # Reconfere o tabuleiro com a visao apos cada lance (hardware).
+  verify_with_vision: true
