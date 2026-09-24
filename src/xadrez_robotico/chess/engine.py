@@ -65,16 +65,17 @@ def _evaluate(board: Board) -> float:
     score = 0.0
     for square, piece in board.piece_map().items():
         value = _PIECE_VALUE[piece.piece_type]
+        sq = square if piece.color == chess.WHITE else chess.square_mirror(square)
         pst = 0
         if piece.piece_type == chess.PAWN:
-            pst = _PAWN_PST[square]
+            pst = _PAWN_PST[sq]
         elif piece.piece_type == chess.KNIGHT:
-            pst = _KNIGHT_PST[square]
+            pst = _KNIGHT_PST[sq]
+
         if piece.color == chess.WHITE:
             score += value + pst
         else:
-            # espelha a tabela para as pretas
-            score -= value + _PAWN_PST[chess.square_mirror(square)] if piece.piece_type == chess.PAWN else value + _KNIGHT_PST[chess.square_mirror(square)]
+            score -= value + pst
     return float(score)
 
 

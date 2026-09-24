@@ -17,14 +17,14 @@ arms:
     enabled: true
     color: white
     connection: usb         # "usb" (pydobot) ou "websocket" (DobotRPC/DobotLab)
-    serial_port: auto       # "auto" ou "COM3", "/dev/ttyUSB0", etc.
+    serial_port: COM5       # braco branco detectado em COM5 (ajuste se necessario)
     # Transformada rigida do quadrado do tabuleiro -> coordenada do robo (mm).
     origin_x: 120.0         # posicao (robo) do canto a1
     origin_y: -120.0
     rotation_deg: 0.0       # rotacao do tabuleiro em relacao ao braco
     spacing: 45.0           # distancia entre centros de quadrados (mm)
     # Alturas (mm, Z positivo para cima)
-    travel_z: 60.0          # altura de transporte segura (acima do tabuleiro)
+    travel_z: 100.0          # altura de transporte segura (acima do tabuleiro)
     grip_z: 8.0             # altura para pegar/soltar a peca
     # Bandeja de capturadas (onde soltar pecas tomadas), em coord robo.
     capture_x: 250.0
@@ -40,12 +40,12 @@ arms:
     enabled: true
     color: black
     connection: usb
-    serial_port: auto
+    serial_port: COM4       # braco preto detectado em COM4 (ajuste se necessario)
     origin_x: 120.0
     origin_y: 120.0
     rotation_deg: 0.0
     spacing: 45.0
-    travel_z: 60.0
+    travel_z: 100.0
     grip_z: 8.0
     capture_x: 250.0
     capture_y: 150.0
@@ -60,7 +60,7 @@ vision:
   camera_index: 1
   width: 640
   height: 480
-  occupancy_threshold: 0.9
+  occupancy_threshold: 0.18
   method: template
 
 # ---------- Inteligencia / Motor de xadrez ----------

@@ -49,6 +49,17 @@ async def cmd_play(args) -> None:
     config = load_config(args.config)
     if args.mode:
         config["mode"] = args.mode
+
+    # Sobrescreve parametros via flags da CLI
+    if getattr(args, "max_moves", None) is not None:
+        config.setdefault("match", {})["max_moves"] = args.max_moves
+    if getattr(args, "white_port", None):
+        config.setdefault("arms", {}).setdefault("white", {})["serial_port"] = args.white_port
+    if getattr(args, "black_port", None):
+        config.setdefault("arms", {}).setdefault("black", {})["serial_port"] = args.black_port
+    if getattr(args, "camera", None) is not None:
+        config.setdefault("vision", {})["camera_index"] = args.camera
+
     calib = load_calibration(args.calibration)
     match = Match(config, calib)
     await match.setup()
@@ -56,6 +67,7 @@ async def cmd_play(args) -> None:
         await match.run()
     finally:
         await match.teardown()
+
 
 
 async def cmd_detect(args) -> None:
@@ -88,9 +100,21 @@ async def cmd_detect(args) -> None:
 async def cmd_calibrate(args) -> None:
     from xadrez_robotico.vision.calibration import Calibration
 
-    print("Calibracao interativa do tabuleiro.")
-    print("Informe o centro (pixels u,v) dos 4 cantos do tabuleiro na imagem:")
-    print("(use 'xadrez detect' ou qualquer visualizador para obter os pixels)\n")
+    out = args.output or str(_project_root() / "config" / "calibration.yaml")
+
+    if not args.manual:
+        try:
+            import sys
+            from tools.calibrate_board import main as run_gui_calibrate
+            sys.argv = ["calibrate_board.py", "--camera", str(args.camera), "--output", out]
+            res = run_gui_calibrate()
+            if res == 0:
+                return
+        except Exception as exc:
+            logger.warning("Nao foi possivel abrir calibracao visual OpenCV (%s). Usando modo manual.", exc)
+
+    print("Calibracao manual do tabuleiro (entrada de coordenadas por texto).")
+    print("Informe o centro (pixels u,v) dos 4 cantos do tabuleiro na imagem:\n")
 
     def ask(name: str) -> tuple[float, float]:
         raw = input(f"{name} (u,v): ")
@@ -104,7 +128,6 @@ async def cmd_calibrate(args) -> None:
     roi = int(input("Tamanho do ROI (px) [48]: ") or "48")
 
     calib = Calibration.build_from_corners(a1, a8, h1, h8, roi)
-    out = args.output or str(_project_root() / "config" / "calibration.yaml")
     calib.save(out)
     print(f"\nCalibracao concluida. Edite '{out}' para informar empty_reference (foto do tabuleiro vazio).")
 
@@ -117,15 +140,26 @@ def build_parser() -> argparse.ArgumentParser:
     play.add_argument("--config", default=None)
     play.add_argument("--calibration", default=None)
     play.add_argument("--mode", choices=["simulation", "hardware"], default=None)
+    play.add_argument("--max-moves", type=int, default=None,
+                      help="Limite de lances (meios-lances). 0 = sem limite.")
+    play.add_argument("--white-port", default=None,
+                      help="Porta serial do braco branco (ex: COM5)")
+    play.add_argument("--black-port", default=None,
+                      help="Porta serial do braco preto (ex: COM4)")
+    play.add_argument("--camera", type=int, default=None,
+                      help="Indice da camera (substitui config)")
     play.set_defaults(func=cmd_play)
+
 
     det = sub.add_parser("detect", help="Mostra a deteccao do tabuleiro pela camera.")
     det.add_argument("--config", default=None)
     det.add_argument("--calibration", default=None)
     det.set_defaults(func=cmd_detect)
 
-    cal = sub.add_parser("calibrate", help="Gera o arquivo de calibracao da camera.")
+    cal = sub.add_parser("calibrate", help="Gera o arquivo de calibracao da camera (janela interativa OpenCV por padrao).")
     cal.add_argument("--output", default=None)
+    cal.add_argument("--camera", type=int, default=1, help="Indice da camera (padrao: 1)")
+    cal.add_argument("--manual", action="store_true", help="Modo manual via digitação de coordenadas no terminal")
     cal.set_defaults(func=cmd_calibrate)
 
     return p

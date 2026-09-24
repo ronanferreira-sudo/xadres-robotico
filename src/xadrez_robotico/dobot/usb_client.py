@@ -10,10 +10,23 @@ logger = logging.getLogger(__name__)
 
 try:
     from pydobot import Dobot as Pydobot
+    from pydobot.enums import PTPMode as _PTPMode
     _PYDOBOT_AVAILABLE = True
 except ImportError:
     _PYDOBOT_AVAILABLE = False
     Pydobot = None
+    _PTPMode = None
+
+
+def _to_ptp_mode(mode_int: int):
+    """Converte inteiro para o enum PTPMode que o pydobot exige."""
+    if _PTPMode is not None:
+        try:
+            return _PTPMode(mode_int)
+        except ValueError:
+            pass
+    return mode_int
+
 
 
 class USBClient:
@@ -108,19 +121,21 @@ class USBClient:
         robo = self._robo
 
         if method == "set_homecmd":
-            robo._set_ptp_cmd(HOME_X, HOME_Y, HOME_Z, HOME_R, mode=PTP_MODES["MOVJ_XYZ"], wait=False)
+            robo._set_ptp_cmd(HOME_X, HOME_Y, HOME_Z, HOME_R,
+                              mode=_to_ptp_mode(PTP_MODES["MOVJ_XYZ"]), wait=True)
             return None
         elif method == "set_ptpcmd":
-            mode = int(params.get("ptp_mode", PTP_MOVJ))
+            mode = _to_ptp_mode(int(params.get("ptp_mode", PTP_MOVJ)))
             robo._set_ptp_cmd(
                 x=params.get("x", 0),
                 y=params.get("y", 0),
                 z=params.get("z", 0),
                 r=params.get("r", 0),
                 mode=mode,
-                wait=False,
+                wait=True,
             )
             return None
+
         elif method == "SetQueuedCmdStartExec":
             return None
         elif method == "SetQueuedCmdStopExec":

@@ -60,11 +60,13 @@ def plan_actions(prev: dict[str, str], new: dict[str, str]) -> list[tuple[str, s
                 used_from.add(from_sq)
                 actions.append(("move", color, from_sq, to_sq))
 
-        captured_squares = set(removed) - used_from
+
+    captured_squares = set(removed) - used_from
     for sq in captured_squares:
         sym = removed[sq]
         opp = "black" if sym.islower() else "white"
         actions.append(("capture", opp, sq, None))
+
 
     # Capturas primeiro para liberar o quadrado de destino.
     captures = [a for a in actions if a[0] == "capture"]
@@ -150,11 +152,15 @@ class Match:
                 logger.info("ACAO: %s captura em %s", color, sq)
                 if arm is not None:
                     await arm.remove_captured(sq)
+                elif hardware:
+                    logger.warning("ACAO: Captura em %s ignorada fisicamente (braco %s nao conectado/desabilitado)", sq, color)
             else:  # move
                 frm, to = a, b
                 logger.info("ACAO: %s move %s -> %s", color, frm, to)
                 if arm is not None:
                     await arm.move_piece(frm, to)
+                elif hardware:
+                    logger.warning("ACAO: Movimento %s -> %s ignorado fisicamente (braco %s nao conectado/desabilitado)", frm, to, color)
         if hardware and self.move_delay:
             await asyncio.sleep(self.move_delay)
 
@@ -175,7 +181,7 @@ class Match:
     # -- loop principal ----------------------------------------------------
 
     async def run(self) -> str:
-        print("=== Iniciando partida (modo: %s) ===", self.mode)
+        print(f"=== Iniciando partida (modo: {self.mode}) ===")
         print(self.state.board)
         while not self.state.is_game_over():
             if self.max_moves and self.move_count >= self.max_moves:
