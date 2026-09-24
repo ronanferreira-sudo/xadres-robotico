@@ -56,6 +56,13 @@ async def test_port(port: str, do_move: bool) -> bool:
             pose = None
 
         if do_move:
+            logger.info("Inicializando fila e velocidade...")
+            try:
+                bot._set_queued_cmd_start_exec()
+                bot.speed(100, 100)
+            except Exception as e:
+                logger.warning("Aviso na inicializacao: %s", e)
+
             logger.info("Enviando HOME...")
             bot.move_to(x=227.53, y=0.0, z=140.83, r=0.0)
             time.sleep(5)
