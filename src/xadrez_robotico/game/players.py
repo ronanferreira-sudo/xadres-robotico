@@ -3,9 +3,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Mapping
-
-import chess
+from typing import Mapping, Any
 
 from ..chess.board_state import BoardState
 from ..chess.engine import choose_move
@@ -17,7 +15,7 @@ class Player:
     def __init__(self, color: str) -> None:
         self.color = color  # "white" | "black"
 
-    def choose(self, state: BoardState) -> chess.Move | None:  # pragma: no cover
+    def choose(self, state: BoardState) -> Any | None:  # pragma: no cover
         raise NotImplementedError
 
 
@@ -26,7 +24,7 @@ class AIPlayer(Player):
         super().__init__(color)
         self.engine_cfg = engine_cfg
 
-    def choose(self, state: BoardState) -> chess.Move | None:
+    def choose(self, state: BoardState) -> Any | None:
         return choose_move(
             state,
             backend=self.engine_cfg.get("backend", "auto"),
@@ -37,17 +35,16 @@ class AIPlayer(Player):
 
 
 class HumanPlayer(Player):
-    def choose(self, state: BoardState) -> chess.Move | None:
+    def choose(self, state: BoardState) -> Any | None:
         print(f"\nVez das {'brancas' if self.color == 'white' else 'pretas'}.")
-        print("Lances legais (UCI):", " ".join(m.uci() for m in state.legal_moves()))
+        print("Lances legais (PDN):", " ".join(m.pdn_move for m in state.legal_moves()))
         while True:
-            raw = input("Seu lance (ex.: e2e4 ou e2e4q): ").strip()
+            raw = input("Seu lance (ex.: 11-15 ou 11x18): ").strip()
             if not raw:
                 return None
-            try:
-                move = chess.Move.from_uci(raw)
-                if state.is_legal(move):
+            
+            for move in state.legal_moves():
+                if move.pdn_move == raw:
                     return move
-                print("Lance ilegal. Tente novamente.")
-            except ValueError:
-                print("Formato invalido. Use UCI (ex.: e2e4).")
+            
+            print("Lance ilegal ou formato invalido. Tente novamente.")

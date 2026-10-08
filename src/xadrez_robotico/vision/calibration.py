@@ -5,13 +5,12 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
-import chess
 import yaml
 
 
 @dataclass
 class Calibration:
-    """Mapeamento dos 64 quadrados para coordenadas de pixels [u, v]."""
+    """Mapeamento dos quadrados para coordenadas de pixels [u, v]."""
 
     square_centers: dict[str, list[float]] = field(default_factory=dict)
     roi_size: int = 48
@@ -70,4 +69,10 @@ class Calibration:
 
 
 def all_squares() -> list[str]:
-    return [chess.square_name(sq) for sq in chess.SQUARES]
+    # a1 to h8
+    out = []
+    for rank in range(1, 9):
+        for file_idx in range(8):
+            f = chr(ord("a") + file_idx)
+            out.append(f"{f}{rank}")
+    return out

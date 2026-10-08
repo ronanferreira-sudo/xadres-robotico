@@ -1,60 +1,216 @@
-# Configuracao geral do sistema xadrez-robotico.
-# Todos os parametros podem ser sobrescritos por variaveis de ambiente ou CLI.
-
-mode: simulation            # "simulation" (sem hardware) ou "hardware" (bracos + cameras reais)
-
+mode: simulation
 board:
-  squares: 8                # tabuleiro 8x8
-  # Altura da superficie do tabuleiro no espaco do robo (mm, eixo Z).
+  squares: 8
   surface_z: 0.0
-  # Lado util do quadrado na visao (mm) - usado apenas para referencia/log.
   square_size_mm: 45.0
-
-# ---------- Bracos roboticos (Dobot Magician Lite) ----------
-# Cada braco e responsavel por uma cor. Em hardware, informe a porta serial de cada um.
 arms:
   white:
     enabled: true
     color: white
-    connection: usb         # "usb" (pydobot) ou "websocket" (DobotRPC/DobotLab)
-    serial_port: COM5       # braco branco detectado em COM5 (ajuste se necessario)
-    # Transformada rigida do quadrado do tabuleiro -> coordenada do robo (mm).
-    origin_x: 120.0         # posicao (robo) do canto a1
+    connection: usb
+    serial_port: COM5
+    origin_x: 120.0
     origin_y: -120.0
-    rotation_deg: 0.0       # rotacao do tabuleiro em relacao ao braco
-    spacing: 45.0           # distancia entre centros de quadrados (mm)
-    # Alturas (mm, Z positivo para cima)
-    travel_z: 100.0          # altura de transporte segura (acima do tabuleiro)
-    grip_z: 8.0             # altura para pegar/soltar a peca
-    # Bandeja de capturadas (onde soltar pecas tomadas), em coord robo.
-    capture_x: 250.0
-    capture_y: -150.0
-    capture_z: 8.0
-    # Velocidade/accel do braco (0-100)
+    rotation_deg: 0.0
+    spacing: 45.0
+    travel_z: 100.0
+    grip_z: 24.19
+    capture_x: 363.4176330566406
+    capture_y: -120.75556945800781
+    capture_z: -15.345335960388184
     velocity: 60
     acceleration: 60
-    # End-effector usado para segurar a peca.
-    effector: suction       # "suction" (ventosa) ou "gripper" (garra)
-
+    effector: suction
+    limits:
+      max_reach_mm: 380.0
+      min_reach_mm: 100.0
+      z_min_mm: -70.0
+      z_max_mm: 160.0
+    corners:
+      A1:
+        x: 203.53
+        y: 81.0
+        z: 24.0
+      H8:
+        x: 368.04
+        y: -92.0
+        z: 24.0
+      H1:
+        x: 198.86
+        y: -89.33
+        z: 21.67
+      A8:
+        x: 377.37
+        y: 71.33
+        z: 24.0
+    square_overrides:
+      A1:
+        x: 203.53
+        y: 81.0
+        z: 20.0
+      C1:
+        x: 202.53
+        y: 30.0
+        z: 24.0
+      E1:
+        x: 200.53
+        y: -15.0
+        z: 23.0
+      G1:
+        x: 199.53
+        y: -65.0
+        z: 22.0
+      B2:
+        x: 229.53
+        y: 58.0
+        z: 23.0
+      D2:
+        x: 229.53
+        y: 8.0
+        z: 24.0
+      F2:
+        x: 224.53
+        y: -42.0
+        z: 23.0
+      H2:
+        x: 227.53
+        y: -92.0
+        z: 24.0
+      A3:
+        x: 255.53
+        y: 82.0
+        z: 24.0
+      C3:
+        x: 255.53
+        y: 32.0
+        z: 24.0
+      E3:
+        x: 255.53
+        y: -18.0
+        z: 24.0
+      G3:
+        x: 253.53
+        y: -69.0
+        z: 24.0
+      B4:
+        x: 282.53
+        y: 54.0
+        z: 24.0
+      D4:
+        x: 282.53
+        y: 8.0
+        z: 24.0
+      F4:
+        x: 282.53
+        y: -42.0
+        z: 24.0
+      H4:
+        x: 282.53
+        y: -92.0
+        z: 24.0
+      A5:
+        x: 308.53
+        y: 80.0
+        z: 29.0
+      C5:
+        x: 308.53
+        y: 30.0
+        z: 25.0
+      E5:
+        x: 308.53
+        y: -20.0
+        z: 25.0
+      G5:
+        x: 308.53
+        y: -70.0
+        z: 25.0
+      B6:
+        x: 334.53
+        y: 56.0
+        z: 25.0
+      D6:
+        x: 334.53
+        y: 6.0
+        z: 25.0
+      F6:
+        x: 334.53
+        y: -44.0
+        z: 25.0
+      H6:
+        x: 333.04
+        y: -92.0
+        z: 24.0
+      H8:
+        x: 368.04
+        y: -92.0
+        z: 24.0
+      G7:
+        x: 361.04
+        y: -72.0
+        z: 24.0
+      E7:
+        x: 358.04
+        y: -22.0
+        z: 24.0
+      F8:
+        x: 373.04
+        y: -47.0
+        z: 24.0
+      D8:
+        x: 379.04
+        y: 3.0
+        z: 24.0
+      C7:
+        x: 359.04
+        y: 28.0
+        z: 24.0
+      B8:
+        x: 376.04
+        y: 48.0
+        z: 24.0
+      A7:
+        x: 361.04
+        y: 78.0
+        z: 24.0
   black:
     enabled: true
     color: black
     connection: usb
-    serial_port: COM4       # braco preto detectado em COM4 (ajuste se necessario)
+    serial_port: COM4
     origin_x: 120.0
     origin_y: 120.0
     rotation_deg: 0.0
     spacing: 45.0
     travel_z: 100.0
     grip_z: 8.0
-    capture_x: 250.0
-    capture_y: 150.0
-    capture_z: 8.0
+    capture_x: 349.8218078613281
+    capture_y: -70.27952575683594
+    capture_z: -18.888151168823242
     velocity: 60
     acceleration: 60
     effector: suction
-
-# ---------- Cameras / Visao computacional ----------
+    limits:
+      max_reach_mm: 380.0
+      min_reach_mm: 100.0
+      z_min_mm: -70.0
+      z_max_mm: 160.0
+    corners:
+      A1:
+        x: 254.06324768066406
+        y: -45.59947967529297
+        z: -23.968368530273438
+      H1:
+        x: 254.06329345703125
+        y: 129.40054321289062
+        z: -23.96837043762207
+      H8:
+        x: 349.8218688964844
+        y: 104.72049713134766
+        z: -20.888229370117188
+      A8:
+        x: 349.8218078613281
+        y: -70.27952575683594
+        z: -18.888151168823242
 vision:
   enabled: true
   camera_index: 1
@@ -62,27 +218,15 @@ vision:
   height: 480
   occupancy_threshold: 0.18
   method: template
-
-# ---------- Inteligencia / Motor de xadrez ----------
 engine:
-  # "stockfish" usa o binario se encontrado; caso contrario cai para "minimax".
-  backend: auto             # "auto" | "stockfish" | "minimax"
-  # Caminho opcional para o binario do Stockfish (None = procura no PATH).
+  backend: auto
   stockfish_path: null
-  # Tempo de pensamento (segundos) para stockfish.
   think_time: 1.0
-  # Profundidade do minimax (usado se nao houver stockfish).
   minimax_depth: 3
-  # Nivel dos jogadores: "white" e "black" podem ser "ai" ou "human".
   players:
     white: ai
     black: ai
-
-# ---------- Partida ----------
 match:
-  # Quantos lances (meio-lances) no maximo antes de desistir (0 = sem limite).
   max_moves: 0
-  # Pausa entre lances (segundos) - util em hardware para acompanhar.
   move_delay: 0.0
-  # Reconfere o tabuleiro com a visao apos cada lance (hardware).
   verify_with_vision: true

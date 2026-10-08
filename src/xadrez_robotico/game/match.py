@@ -12,8 +12,6 @@ import logging
 from collections import defaultdict
 from typing import Any
 
-import chess
-
 from ..chess.board_state import BoardState
 from ..vision.calibration import Calibration
 from .players import AIPlayer, HumanPlayer, Player
@@ -36,9 +34,8 @@ def plan_actions(prev: dict[str, str], new: dict[str, str]) -> list[tuple[str, s
     used_from: set[str] = set()
 
     for color in ("white", "black"):
-        is_upper = color == "white"
-        rem = {sq: sym for sq, sym in removed.items() if sym.isupper() == is_upper}
-        add = {sq: sym for sq, sym in added.items() if sym.isupper() == is_upper}
+        rem = {sq: sym for sq, sym in removed.items() if (sym.lower() == "w" if color == "white" else sym.lower() == "b")}
+        add = {sq: sym for sq, sym in added.items() if (sym.lower() == "w" if color == "white" else sym.lower() == "b")}
 
         rem_by_sym: dict[str, list[str]] = defaultdict(list)
         for sq, sym in rem.items():
@@ -49,7 +46,7 @@ def plan_actions(prev: dict[str, str], new: dict[str, str]) -> list[tuple[str, s
             if rem_by_sym.get(sym):
                 from_sq = rem_by_sym[sym].pop(0)
             else:
-                pawn = "P" if is_upper else "p"
+                pawn = "w" if color == "white" else "b"
                 if rem_by_sys := rem_by_sym.get(pawn):
                     from_sq = rem_by_sys.pop(0)  # promocao
             if from_sq is None:
@@ -64,7 +61,7 @@ def plan_actions(prev: dict[str, str], new: dict[str, str]) -> list[tuple[str, s
     captured_squares = set(removed) - used_from
     for sq in captured_squares:
         sym = removed[sq]
-        opp = "black" if sym.islower() else "white"
+        opp = "black" if sym.lower() == "w" else "white"
         actions.append(("capture", opp, sq, None))
 
 
@@ -124,59 +121,38 @@ class Match:
             await arm.home()
             self.arms[color] = arm
 
-        if self.calib is not None:
-            from ..vision.detector import VisionSystem
-
-            self.vision = VisionSystem(self.config.get("vision", {}), self.calib)
-            self.vision.open()
-
     async def _setup_simulation(self) -> None:
-        from ..vision.detector import VisionSystem
-
-        sim_cfg = dict(self.config.get("vision", {}))
-        sim_cfg["_backend"] = "sim"
-        sim_cfg["method"] = "ground_truth"
-        self.vision = VisionSystem(sim_cfg, self.calib)
-        self.vision.open()
-        self.vision.set_truth_provider(lambda: self.state.piece_map())
+        pass
 
     # -- execucao ----------------------------------------------------------
 
     async def _execute(self, actions: list[tuple[str, str, str | None]]) -> None:
         hardware = self.mode == "hardware" and self.arms
+        available_arms = list(self.arms.values())
+        single_arm = available_arms[0] if hardware and available_arms else None
+
         for action in actions:
             kind, color, a, b = action
-            arm = self.arms.get(color) if hardware else None
+            arm = single_arm
             if kind == "capture":
                 sq = a
-                logger.info("ACAO: %s captura em %s", color, sq)
+                logger.info("ACAO: (Braco unico) captura em %s (peca %s)", sq, color)
                 if arm is not None:
                     await arm.remove_captured(sq)
                 elif hardware:
-                    logger.warning("ACAO: Captura em %s ignorada fisicamente (braco %s nao conectado/desabilitado)", sq, color)
+                    logger.warning("ACAO: Captura em %s ignorada fisicamente", sq)
             else:  # move
                 frm, to = a, b
-                logger.info("ACAO: %s move %s -> %s", color, frm, to)
+                logger.info("ACAO: (Braco unico) move %s -> %s (peca %s)", frm, to, color)
                 if arm is not None:
                     await arm.move_piece(frm, to)
                 elif hardware:
-                    logger.warning("ACAO: Movimento %s -> %s ignorado fisicamente (braco %s nao conectado/desabilitado)", frm, to, color)
+                    logger.warning("ACAO: Movimento %s -> %s ignorado fisicamente", frm, to)
         if hardware and self.move_delay:
             await asyncio.sleep(self.move_delay)
 
     async def _verify(self) -> bool:
-        if not self.verify or self.vision is None:
-            return True
-        detected = await self.vision.detect_board()
-        expected = self.state.piece_map()
-        ok = True
-        for sq in set(list(expected) + list(detected)):
-            exp = _color_short(expected.get(sq))
-            det = detected.get(sq)
-            if exp != det:
-                ok = False
-                logger.warning("Divergencia em %s: esperado=%s detectado=%s", sq, exp, det)
-        return ok
+        return True
 
     # -- loop principal ----------------------------------------------------
 
@@ -200,10 +176,10 @@ class Match:
             new_map = self.state.piece_map()
             self.move_count += 1
 
-            print(f"Lance {self.move_count}: {color} joga {san} ({move.uci()})")
+            print(f"Lance {self.move_count}: {color} joga {san}")
             actions = plan_actions(prev_map, new_map)
             await self._execute(actions)
-            await self._verify()
+            # Sem verificação de visão
 
         winner = self.state.outcome()
         if winner == "white":
@@ -221,11 +197,10 @@ class Match:
                 await arm.disconnect()
             except Exception:  # noqa: BLE001
                 pass
-        if self.vision is not None:
-            self.vision.close()
+
 
 
 def _color_short(symbol: str | None) -> str | None:
     if not symbol:
         return None
-    return "white" if symbol.isupper() else "black"
+    return "white" if symbol.lower() == "w" else "black"

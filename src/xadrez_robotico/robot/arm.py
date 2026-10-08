@@ -106,12 +106,21 @@ class Arm:
         await self._go_above(square)
 
     async def _go_above(self, square: str) -> None:
-        x, y = self.kin.to_xy(square)
-        await self.robot.motion.movl(x, y, self.travel_z, 0)
+        x, y, base_z = self.kin.to_xyz_interpolated(square, self.grip_z)
+        # travel_z é absoluto ou relativo? Se a base for -20, travel_z 100 é seguro.
+        # Vamos usar um deslocamento relativo (ex: +40) se travel_z for absoluto e a base for negativa.
+        # Mas para garantir que não bate nas peças, vamos somar a altura de segurança (ex: 80 mm) ao base_z
+        # Porém, no sistema original, travel_z era absoluto.
+        # Vamos manter absoluto se for maior que base_z + 40, ou usar base_z + 40.
+        safe_z = max(self.travel_z, base_z + 60.0)
+        await self.robot.motion.movl(x, y, safe_z, 0)
 
     async def _go_to(self, square: str, z: float) -> None:
-        x, y = self.kin.to_xy(square)
-        await self.robot.motion.movl(x, y, z, 0)
+        x, y, base_z = self.kin.to_xyz_interpolated(square, z)
+        # Aqui, z passado era grip_z absoluto (ex: 8.0).
+        # Agora base_z já é a altura REAL daquele quadrado (ex: -20).
+        # Vamos usar o base_z interpolado diretamente!
+        await self.robot.motion.movl(x, y, base_z, 0)
 
     async def _grip(self, on: bool) -> None:
         if self.effector == "gripper":
